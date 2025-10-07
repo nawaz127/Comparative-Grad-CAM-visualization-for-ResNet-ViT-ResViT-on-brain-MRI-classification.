@@ -1,13 +1,13 @@
 {
   "split": "val",
   "classes": [
-    "Bengin cases",
-    "Malignant cases",
-    "Normal cases"
+    "brain_glioma",
+    "brain_menin",
+    "brain_tumor"
   ],
-  "temperature": 1.7727272727272727,
-  "ece_before": 0.03273246486294232,
-  "ece_after": 0.019715180652776814,
-  "brier_before": 0.02163709425054205,
-  "brier_after": 0.020531250326788972
+  "temperature": 0.5,
+  "ece_before": 2.086162567138672e-05,
+  "ece_after": 0.0,
+  "brier_before": 7.052852586917825e-10,
+  "brier_after": 8.868805205640723e-19
 }

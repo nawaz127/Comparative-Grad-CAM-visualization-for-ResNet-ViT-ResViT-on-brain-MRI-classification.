@@ -1,21 +1,50 @@
+# ---- Python ----
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pdb
 *.egg-info/
+*.egg
+
+# ---- Environment ----
 .venv/
-.env
-.ipynb_checkpoints/
+.env/
+venv/
+ENV/
+*.bak
+*.swp
+*.DS_Store
 
-# Data / outputs (keep repo light)
-data/raw/
-data/processed/*
+# ---- Streamlit Cache ----
+.streamlit/
+.cache/
+__pycache__/
 
-# Experiments (keep metadata & images, ignore heavy tensors by default)
+# ---- Experiments / Outputs ----
 experiments/**/best.pt
-experiments/**/best_temp_scaled.pt
+experiments/**/gradcam/
+experiments/**/figs/
 experiments/**/probs_*.npz
+experiments/**/evaluation.json
+experiments/**/summary.csv
+experiments/**/split_manifest.json
+experiments/combined_panels/
 
-# Streamlit caches
-.streamlit/credentials.toml
-.streamlit/secrets.toml
+# ---- Data ----
+data/raw/
+data/processed/train/
+data/processed/val/
+data/processed/test/
+*.nii
+*.csv
+*.json
+*.zip
+
+# ---- Checkpoints ----
+*.pt
+*.pth
+
+# ---- IDE ----
+.vscode/
+.idea/

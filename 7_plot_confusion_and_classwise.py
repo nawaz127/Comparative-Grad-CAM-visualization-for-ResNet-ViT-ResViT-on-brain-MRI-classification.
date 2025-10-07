@@ -1,64 +1,112 @@
-import os, json, argparse
-import numpy as np
-import matplotlib.pyplot as plt
+import os, argparse, numpy as np, matplotlib.pyplot as plt, seaborn as sns, json
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 
-def plot_confusion_matrix(cm, classes, out_path):
-    cm = np.array(cm, dtype=float)
-    cm_norm = cm / cm.sum(axis=1, keepdims=True).clip(min=1e-9)
-    plt.figure()
-    plt.imshow(cm_norm, interpolation='nearest', aspect='auto')
-    plt.title('Confusion Matrix (normalized)')
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45, ha='right')
-    plt.yticks(tick_marks, classes)
-    # numbers
-    for i in range(len(classes)):
-        for j in range(len(classes)):
-            plt.text(j, i, f"{cm_norm[i, j]:.2f}", ha="center", va="center", color="white" if cm_norm[i, j] > 0.5 else "black")
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
+# ------------------------------
+# Confusion Matrix Plotter
+# ------------------------------
+def plot_confmat(y_true, y_pred, labels, out_dir, normalize=True):
+    os.makedirs(out_dir, exist_ok=True)
+    cm = confusion_matrix(y_true, y_pred, labels=range(len(labels)))
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1, keepdims=True)
+        cm = np.nan_to_num(cm)
+
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(
+        cm,
+        annot=True,
+        fmt=".2f" if normalize else "d",
+        xticklabels=labels,
+        yticklabels=labels,
+        cmap="Blues",
+        cbar=False,
+        square=True,
+    )
+    plt.ylabel("True Label")
+    plt.xlabel("Predicted Label")
+    plt.title("Confusion Matrix" + (" (Normalized)" if normalize else ""))
     plt.tight_layout()
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    plt.savefig(out_path, dpi=150, bbox_inches='tight')
+    save_path = os.path.join(out_dir, "confusion_matrix.png")
+    plt.savefig(save_path, dpi=300)
     plt.close()
+    print(f"✅ Saved confusion matrix to {save_path}")
 
-def classwise_markdown_table(report_dict, classes, out_path_md):
-    # Build a markdown table for per-class precision/recall/f1
-    lines = ["| class | precision | recall | f1-score | support |",
-             "|---|---:|---:|---:|---:|"]
-    for cls in classes:
-        stats = report_dict.get(cls, {})
-        p = stats.get('precision', 0.0)
-        r = stats.get('recall', 0.0)
-        f1 = stats.get('f1-score', 0.0)
-        sup = stats.get('support', 0)
-        lines.append(f"| {cls} | {p:.4f} | {r:.4f} | {f1:.4f} | {sup} |")
-    md = "\n".join(lines)
-    with open(out_path_md, "w", encoding="utf-8") as f:
-        f.write(md)
-    return md
+    # Also save as npy
+    np.save(os.path.join(out_dir, "confusion_matrix.npy"), cm)
+    return cm
 
+
+# ------------------------------
+# Classwise Metrics
+# ------------------------------
+def save_classwise(y_true, y_pred, labels, out_dir):
+    report = classification_report(y_true, y_pred, target_names=labels, output_dict=True)
+    json_path = os.path.join(out_dir, "classwise_metrics.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2)
+    print(f"📊 Class-wise metrics saved to {json_path}")
+
+    # Markdown version (for README)
+    import pandas as pd
+    df = pd.DataFrame(report).T
+    md_path = os.path.join(out_dir, "classwise_metrics.md")
+    df.to_markdown(md_path)
+    print(f"🧾 Markdown version saved: {md_path}")
+
+    # Return summary for accuracy/macro F1
+    acc = report.get("accuracy", 0.0)
+    macro_f1 = report.get("macro avg", {}).get("f1-score", 0.0)
+    return acc, macro_f1
+
+
+# ------------------------------
+# Main
+# ------------------------------
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--exp_dir", required=True, help="experiments/expXX_*")
+    ap.add_argument("--exp_dir", required=True, help="e.g., experiments/exp01_resnet")
+    ap.add_argument("--split", choices=["val", "test"], default="test")
     args = ap.parse_args()
-    ej = os.path.join(args.exp_dir, "evaluation.json")
-    assert os.path.exists(ej), f"Not found: {ej}. Run 3_eval.py first."
-    with open(ej, "r", encoding="utf-8") as f:
-        d = json.load(f)
-    classes = d.get("classes", [])
-    report = d.get("classification_report", {})
-    cm = d.get("confusion_matrix", [])
-    figs_dir = os.path.join(args.exp_dir, "figs")
+
+    exp_dir = args.exp_dir
+    figs_dir = os.path.join(exp_dir, "figs")
     os.makedirs(figs_dir, exist_ok=True)
-    # Confusion matrix heatmap
-    cm_path = os.path.join(figs_dir, "confusion_matrix.png")
-    plot_confusion_matrix(cm, classes, cm_path)
-    # Class-wise metrics table (markdown)
-    md_path = os.path.join(args.exp_dir, "classwise_metrics.md")
-    classwise_markdown_table(report, classes, md_path)
-    print("Saved:", cm_path, "and", md_path)
+
+    # Locate probs file
+    npz_path = None
+    for f in ("probs_test.npz", "probs_val.npz", "probs.npz"):
+        p = os.path.join(exp_dir, f)
+        if os.path.exists(p):
+            npz_path = p
+            break
+    assert npz_path, f"No probability file found in {exp_dir}"
+
+    # Load predictions
+    data = np.load(npz_path, allow_pickle=True)
+    y_true = data["y_true"]
+    y_prob = data["y_prob"]
+    labels = list(data["classes"])
+    y_pred = np.argmax(y_prob, axis=1)
+
+    print(f"🧩 Loaded {len(y_true)} samples from {npz_path}")
+    print(f"📈 Labels: {labels}")
+
+    # Plot Confusion Matrix
+    plot_confmat(y_true, y_pred, labels, figs_dir, normalize=True)
+
+    # Save Classwise Metrics
+    acc, macro_f1 = save_classwise(y_true, y_pred, labels, exp_dir)
+
+    # Save simple evaluation summary for update_readme
+    summary = {
+        "model": os.path.basename(exp_dir),
+        "accuracy": float(acc),
+        "macro_f1": float(macro_f1),
+    }
+    with open(os.path.join(exp_dir, "evaluation_summary.json"), "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+    print(f"✅ Saved summary JSON: {exp_dir}/evaluation_summary.json")
+
 
 if __name__ == "__main__":
     main()

@@ -1,60 +1,60 @@
 {
   "model": "resvit",
-  "split": "test",
+  "split": "val",
   "classes": [
-    "Bengin cases",
-    "Malignant cases",
-    "Normal cases"
+    "brain_glioma",
+    "brain_menin",
+    "brain_tumor"
   ],
   "classification_report": {
     "0": {
-      "precision": 0.9078947368421053,
-      "recall": 0.9857142857142858,
-      "f1-score": 0.9452054794520548,
-      "support": 70.0
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 300.0
     },
     "1": {
-      "precision": 0.9933774834437086,
-      "recall": 0.9554140127388535,
-      "f1-score": 0.974025974025974,
-      "support": 157.0
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 300.0
     },
     "2": {
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 62.0
+      "support": 307.0
     },
-    "accuracy": 0.972318339100346,
+    "accuracy": 1.0,
     "macro avg": {
-      "precision": 0.9670907400952714,
-      "recall": 0.9803760994843799,
-      "f1-score": 0.9730771511593429,
-      "support": 289.0
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 907.0
     },
     "weighted avg": {
-      "precision": 0.9740930674034934,
-      "recall": 0.972318339100346,
-      "f1-score": 0.9726175137845045,
-      "support": 289.0
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 907.0
     }
   },
   "confusion_matrix": [
     [
-      69,
-      1,
+      300,
+      0,
       0
     ],
     [
-      7,
-      150,
+      0,
+      300,
       0
     ],
     [
       0,
       0,
-      62
+      307
     ]
   ],
-  "auc_ovr": 0.9978059604357484
+  "auc_ovr": 1.0
 }

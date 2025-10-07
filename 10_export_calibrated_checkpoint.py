@@ -12,11 +12,10 @@ def main():
         args.ckpt = os.path.join(args.exp_dir, "best.pt")
     assert os.path.exists(args.ckpt), f"Checkpoint not found: {args.ckpt}"
 
-    # Find a calibration report to extract T
+    # --- Load temperature
     T = None
     if args.calib_json is None:
-        # prefer val then test
-        for split in ["val","test"]:
+        for split in ["val", "test"]:
             cand = os.path.join(args.exp_dir, f"calibration_report_{split}.json")
             if os.path.exists(cand):
                 args.calib_json = cand
@@ -25,14 +24,14 @@ def main():
         with open(args.calib_json, "r", encoding="utf-8") as f:
             T = json.load(f).get("temperature", None)
     if T is None:
-        raise SystemExit("No temperature found. Run 9_temp_scaling_and_calibration_metrics.py first.")
+        raise SystemExit("❌ No temperature found. Run 9_temp_scaling_and_calibration_metrics.py first.")
 
-    # Load original state_dict (or dict)
+    # --- Export scaled checkpoint
     obj = torch.load(args.ckpt, map_location="cpu")
     payload = {"state_dict": obj, "temperature": float(T)}
     out = args.out or os.path.join(args.exp_dir, "best_temp_scaled.pt")
     torch.save(payload, out)
-    print("Wrote:", out, "with temperature T=", T)
+    print(f"✅ Wrote: {out} with temperature T={T:.3f}")
 
 if __name__ == "__main__":
     main()

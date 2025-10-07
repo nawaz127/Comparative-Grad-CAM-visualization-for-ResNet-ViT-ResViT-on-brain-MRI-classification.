@@ -1,0 +1,33 @@
+{
+  "classes": [
+    "brain_glioma",
+    "brain_menin",
+    "brain_tumor"
+  ],
+  "macro_summary": {
+    "macro_auc": 0.9998943529494538,
+    "macro_ap": 0.9997939251185229
+  },
+  "per_class_pr": {
+    "brain_glioma": {
+      "average_precision": 0.9999889258028793
+    },
+    "brain_menin": {
+      "average_precision": 0.9996595400606776
+    },
+    "brain_tumor": {
+      "average_precision": 0.9997333094920117
+    }
+  },
+  "per_class_roc": {
+    "brain_glioma": {
+      "roc_auc": 0.9999945085118066
+    },
+    "brain_menin": {
+      "roc_auc": 0.9998242723778143
+    },
+    "brain_tumor": {
+      "roc_auc": 0.9998642779587404
+    }
+  }
+}

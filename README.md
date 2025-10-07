@@ -52,7 +52,7 @@ MRI/
 
 **Confusion Matrix**  
 
-![confusion matrix](experiments/exp02_resnet/figs/confusion_matrix.png)
+![Confusion Matrix](./experiments/exp01_resnet/figs/confusion_matrix.png)
 
 **Precision-Recall**
 ![pr_0_brain_glioma](experiments/exp01_resnet/figs/pr_0_brain_glioma.png)

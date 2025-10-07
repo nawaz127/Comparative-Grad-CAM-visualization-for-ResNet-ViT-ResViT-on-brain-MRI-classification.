@@ -86,9 +86,7 @@ MRI/
 ![roc_2_brain_tumor](experiments/exp02_vit/figs/roc_2_brain_tumor.png)
 
 **Calibration (Reliability)**
-![calibration_0_brain_glioma](experiments/exp02_vit/figs/calibration_0_brain_glioma.png)
-![calibration_1_brain_menin](experiments/exp02_vit/figs/calibration_1_brain_menin.png)
-![calibration_2_brain_tumor](experiments/exp02_vit/figs/calibration_2_brain_tumor.png)
+| **ViT-B/16** | ![](./experiments/exp02_vit/figs/calibration_brain_glioma.png) | ![](./experiments/exp02_vit/figs/calibration_brain_menin.png) | ![](./experiments/exp02_vit/figs/calibration_brain_tumor.png) |
 
 
 ### ✅ ResViT — experiments/exp03_resvit/figs/
@@ -107,9 +105,7 @@ MRI/
 ![roc_2_brain_tumor](experiments/exp03_resvit/figs/roc_2_brain_tumor.png)
 
 **Calibration (Reliability)**
-![calibration_0_brain_glioma](experiments/exp03_resvit/figs/calibration_0_brain_glioma.png)
-![calibration_1_brain_menin](experiments/exp03_resvit/figs/calibration_1_brain_menin.png)
-![calibration_2_brain_tumor](experiments/exp03_resvit/figs/calibration_2_brain_tumor.png)
+| **ResViT**   | ![](./experiments/exp03_resvit/figs/calibration_brain_glioma.png) | ![](./experiments/exp03_resvit/figs/calibration_brain_menin.png) | ![](./experiments/exp03_resvit/figs/calibration_brain_tumor.png) |
 
 
 ## 🖥️ Streamlit App
